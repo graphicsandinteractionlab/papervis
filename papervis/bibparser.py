@@ -5,10 +5,12 @@ from bibtexparser.bparser import BibTexParser
 
 class BibParser:
     def __init__(self):
+        self.pdf_files = dict()
         pass
         
     def open(self,bibfile):
         
+        # read file 
         with open(bibfile) as bibtex_file:
             bibtex_str = bibtex_file.read()
         
@@ -17,6 +19,7 @@ class BibParser:
         parser.ignore_nonstandard_types = True
         parser.homogenise_fields = True
         
+        # generate database
         self.bib_database = bibtexparser.loads(bibtex_str, parser)
 
         # print(self.bib_database.entries)
