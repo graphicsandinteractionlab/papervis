@@ -6,7 +6,8 @@ PaperVis is a project of the Graphics and Interaction Laboratory for the lecture
 ## Note
 
 Exporting from Zotero will add fields for months like: aug or feb - these need to be defined in your BibTeX file like this
-'@STRING{ jan = "January" }
+```bibtex
+@STRING{ jan = "January" }
 @STRING{ feb = "February" }
 @STRING{ mar = "March" }
 @STRING{ apr = "April" }
@@ -18,5 +19,5 @@ Exporting from Zotero will add fields for months like: aug or feb - these need t
 @STRING{ oct = "October" }
 @STRING{ nov = "November" }
 @STRING{ dec = "December" }
-'
+```
 or in whatever language you plan to use the parser
