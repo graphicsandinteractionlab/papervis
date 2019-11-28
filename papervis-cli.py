@@ -19,13 +19,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import yaml
 import os
 import string
+import json
 
 config = yaml.safe_load(open("config/config.yml"))
 
 class StemmerSimilarity:
     def __init__(self):
-        nltk.download('punkt') # if necessary...
-        nltk.download('stopwords')
+#        nltk.download('punkt') # if necessary...
+#        nltk.download('stopwords')
         self.stemmer = nltk.stem.porter.PorterStemmer()
         self.remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
         self.vectorizer = TfidfVectorizer(tokenizer = self.normalize, stop_words = 'english')
@@ -63,30 +64,63 @@ def main ():
     # prefix path from bibtext file
     prefix_path = os.path.dirname(os.path.realpath(config['path']))
     
+    word_stems_all = dict()
+    freq_all = dict()
+    
     # get all pdf names
     for identifier in bp.pdf_files:
         # print(bp.pdf_files[identifier])
         file_name = prefix_path + os.path.sep + bp.pdf_files[identifier]
         data = parse_pdf_to_raw(file_name)
         
-        # print(data)
-        
         # stem words
         ss = StemmerSimilarity()
-        words = ss.process(data['content'])
+        word_stems = ss.process(data['content'])
         
         # remove stop words
-        words = ss.remove_stopwords(words)
+        word_stems = ss.remove_stopwords(word_stems)
+        
+        # merge data over id
+        word_stems_all[identifier] = word_stems
         
         # frequencies
-        fdist = nltk.FreqDist(words)
+        fdist = nltk.FreqDist(word_stems)
+
+        # merge all frequencies
+        freq_all[identifier] = [] 
         
-        # print(fdist)
-        for word, frequency in fdist.most_common(50):
-            print(u'{};{}'.format(word, frequency))
+        for word,freq in fdist.most_common(50):
+            freq_all[identifier].append( {'word' : word, 'size' : freq } )
         
+        # break
+    
+    words_all = []
+    for key,words in word_stems_all.items():
+        words_all += words
         
-        break
+    # print(words_all)
+    
+    # for ident, words in word_stems_all[0]:
+        # words_all.append(words)
+    #
+    # frequencies
+    fdist_all = nltk.FreqDist(words_all)
+    
+    # print(fdist_all)
+    
+
+    freq_all_merged = []
+    for word,freq in fdist_all.most_common(50):
+        freq_all_merged.append( {'word' : word, 'size' : freq } )
+
+    
+    # print(fdist_all)
+    json_freq = json.dumps({'input' : freq_all_merged})
+    
+    # per paper frequency 
+    # print(json_freq)
+    
+    
 
 if __name__  == "__main__":
     main()
