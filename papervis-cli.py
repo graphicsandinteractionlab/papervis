@@ -11,7 +11,6 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 
 
-
 from papervis.bibparser import BibParser
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -25,8 +24,18 @@ config = yaml.safe_load(open("config/config.yml"))
 
 class StemmerSimilarity:
     def __init__(self):
-#        nltk.download('punkt') # if necessary...
-#        nltk.download('stopwords')
+        # load punktuation
+        try:
+            nltk.data.find('tokenizers/punkt')
+        except:
+            nltk.download('punkt')
+        
+        # load stop words corpora
+        try:
+            nltk.data.find('corpora/stopwords')
+        except:
+            nltk.download('stopwords')
+        
         self.stemmer = nltk.stem.porter.PorterStemmer()
         self.remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
         self.vectorizer = TfidfVectorizer(tokenizer = self.normalize, stop_words = 'english')
